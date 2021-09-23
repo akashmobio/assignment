@@ -2,58 +2,88 @@
 
 namespace App\Imports;
 
+use App\Models\Designation;
 use App\Models\Employee;
+use App\Models\EmployeeSalary;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Date;
+use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
-class EmployeeImport implements ToModel, WithHeadingRow, ToCollection
+class EmployeeImport implements ToCollection,WithHeadingRow,WithValidation
 {
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function model(array $row)
+    use Importable;
+
+    public function rules(): array
     {
-        // $d = $row['dob'];
-        // $miliseconds = ($d - (25567 + 2)) * 86400 * 1000;
-        // $seconds = $miliseconds / 1000;
-        // dd(date("Y-m-d", $seconds));
-        // dd($row);
-        // return new Employee([
-        //     'code'      => $row['code'],
-        //     'name'      => $row['name'],
-        //     'email'     => $row['email'],
-        //     'gender'    => $row['gender'],
-        //     'dob'       => $row['dob'],
-        //     'address'    => $row['address'],
-        //     'phone_number'    => $row['phone_number'],
-        //     'marital_status'    => $row['marital_status'],
-        //     'experience'    => $row['experience'],
-        // ]);
+        return [
+            'code' => 'required|unique:employees',
+            'name' => 'required',
+            'email' => 'required|email|unique:employees',
+            'gender' => 'required',
+            'dob' => 'required',
+            'address' => 'required',
+            'phone_number' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+            'marital_status' => 'required',
+            'experience' => 'required|date_format:Y',
+            'current_salary' => 'required|numeric',
+            'designation' => 'required|alpha'
+        ];
     }
-    public function collection(Collection $collection)
+
+    public function customValidationMessage()
     {
-        foreach ($collection as $row) {
-            // $d = $row['dob'];
-            // $miliseconds = ($d - (25567 + 2)) * 86400 * 1000;
-            // $seconds = $miliseconds / 1000;
-            // $date= date("Y-m-d", $seconds);
+        return [
+            'code.required' => "Employee Code must not be empty",
+            'code.unique' => "Employee Code is already Used",
+
+            'name.required' => "Employee Name must not be empty",
+            
+            'email.required' => "Employee Email must not be empty",
+            'email.email' => "Incorrect Email Address",
+            'email.unique' => "Employee Email already exist",
+
+            'gender.required' => "Employee Gender must not be empty",
+            'dob.required' => "Employee DOB must not be empty",
+            'address.required' => "Employee Address must not be empty",
+            
+            'phone_number.required' => "Employee Phonenumber must not be empty",
+            'phone_number.regex' => "Incorrect Format Employee number",
+
+            'marital_status.required' => "Employee MaritalStatus must not be empty",
+            'experience.required' => "Employee Experience must not be empty",
+            'current_salary.required' => "Employee Current Salary must not be empty",
+            'designation.required' => "Employee Designation must not be empty",
+
+        ];
+    }
+
+    public function collection(Collection $rows)
+    {
+        foreach($rows as $row){
             $emp = Employee::create([
                 'code'      => $row['code'],
                 'name'      => $row['name'],
                 'email'     => $row['email'],
                 'gender'    => $row['gender'],
-                'dob'       => $row['dob'],
+                'dob'       => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['dob']),
                 'address'    => $row['address'],
                 'phone_number'    => $row['phone_number'],
                 'marital_status'    => $row['marital_status'],
                 'experience'    => $row['experience'],
             ]);
-            echo ($emp);
+            
+            $emp_salary = EmployeeSalary::create([
+                'current_salary' =>$row['current_salary'],
+                'employee_id' => $emp->id,
+            ]);
+
+            $emp_salary = Designation::create([
+                'designation' =>$row['designation'],
+                'employee_id' => $emp->id,
+            ]);
         }
     }
 }
