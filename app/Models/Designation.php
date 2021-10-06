@@ -15,7 +15,10 @@ class Designation extends Model
 
     protected $fillable = [
         'designation',
-        'employee_id',
+        'employee_id'
     ];
     
+    // public function employee(){
+    //     return $this->hasOne(Employee::class);
+    // }
 }

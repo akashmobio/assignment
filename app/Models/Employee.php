@@ -23,4 +23,12 @@ class Employee extends Model
         'marital_status',
         'experience'
     ];
+
+    public function employeeSalary(){
+        return $this->hasOne(EmployeeSalary::class);
+    }
+
+    public function designation(){
+        return $this->hasOne(Designation::class);
+    }
 }

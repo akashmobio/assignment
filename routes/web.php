@@ -18,6 +18,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('employee',[EmployeeController::class,'index'])->name('employee.index');
 Route::get('employee/view',[EmployeeController::class,'view'])->name('employee.view');
-Route::get('employee',[EmployeeController::class,'index'])->name('index');
-Route::post('employee/importProject', [EmployeeController::class, 'importProject'])->name('importProject');
+Route::post('employee/importProject', [EmployeeController::class, 'importProject'])->name('employee.importProject');
+Route::get('acceptEvent',[EmployeeController::class,'acceptEvent'])->name('employee.acceptEvent');
+Route::get('reject',[EmployeeController::class,'rejectEmployee'])->name('employee.rejectEmployee');

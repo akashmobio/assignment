@@ -1,13 +1,15 @@
 @extends('layouts')
 @section('title')
-    Index Page
+    Index File
 @endsection
 @section('content')
-
-
-    <a href="{{ route('employee.view') }}" class="link-primary">Home</a>
     @if ($message = Session::get('success'))
         <div class="alert alert-success">
+            <p>{{ $message }}</p>
+        </div>
+    @endif
+    @if ($message = Session::get('error'))
+        <div class="alert alert-danger">
             <p>{{ $message }}</p>
         </div>
     @endif
@@ -24,47 +26,25 @@
             </div>
         </div>
     @endif
-    <table class="table table-bordered table-responsive-lg table-hover">
-        <thead>
-            <tr class="table-primary">
-                <th scope="col">code</th>
-                <th scope="col">name</th>
-                <th scope="col">email</th>
-                <th scope="col">gender</th>
-                <th scope="col">dob</th>
-                <th scope="col">address</th>
-                <th scope="col">gender</th>
-                <th scope="col">phone_number</th>
-                <th scope="col">marital_status</th>
-                <th scope="col">experience</th>
-                <th scope="col">current_salary</th>
-                <th scope="col">designations</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($employees as $employee)
-                <tr>
-                    <td>{{ $employee->code }}</td>
-                    <td>{{ $employee->name }}</td>
-                    <td>{{ $employee->email }}</td>
-                    <td>{{ $employee->gender }}</td>
-                    <td>{{ $employee->dob }}</td>
-                    <td>{{ $employee->address }}</td>
-                    <td>{{ $employee->gender }}</td>
-                    <td>{{ $employee->phone_number }}</td>
-                    <td>{{ $employee->marital_status }}</td>
-                    <td>{{ $employee->experience }}</td>
-                    <td>{{ $employee->current_salary }}</td>
-                    <td>{{ $employee->designation }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <script>
-        $(document).ready(function() {
-            $(".alert").fadeTo(2000, 2000).slideUp(2000, function() {
-                $(".alert").slideUp(5000);
-            });
-        });
-    </script>
+    <div class="row">
+        <div class="col-lg-12 margin-tb">
+            <div class="pull-left">
+                <h2>Excel File Upload </h2>
+            </div>
+            <div class="d-flex flex-row-reverse flex-column">
+                <div class="d-flex">
+                    {{-- acceptEvent--}}
+                    <form action="{{ route('employee.importProject') }}" method="POST" enctype="multipart/form-data"
+                        class="d-flex">
+                        @csrf
+                        <input type="file" name="file" style="height: 30px !important" required>
+
+                        <button class="btn btn-info" style="margin-left: -60px" title="Import Project">
+                            <i class="fas fa-cloud-upload-alt fa-2x"></i> </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+

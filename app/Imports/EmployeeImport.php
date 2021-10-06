@@ -5,14 +5,18 @@ namespace App\Imports;
 use App\Models\Designation;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class EmployeeImport implements ToCollection,WithHeadingRow,WithValidation
+class EmployeeImport implements
+    ToCollection,
+    WithHeadingRow,
+    WithValidation
 {
     use Importable;
 
@@ -29,7 +33,7 @@ class EmployeeImport implements ToCollection,WithHeadingRow,WithValidation
             'marital_status' => 'required',
             'experience' => 'required|date_format:Y',
             'current_salary' => 'required|numeric',
-            'designation' => 'required|alpha'
+            'designation' => 'required'
         ];
     }
 
@@ -40,7 +44,7 @@ class EmployeeImport implements ToCollection,WithHeadingRow,WithValidation
             'code.unique' => "Employee Code is already Used",
 
             'name.required' => "Employee Name must not be empty",
-            
+
             'email.required' => "Employee Email must not be empty",
             'email.email' => "Incorrect Email Address",
             'email.unique' => "Employee Email already exist",
@@ -48,7 +52,7 @@ class EmployeeImport implements ToCollection,WithHeadingRow,WithValidation
             'gender.required' => "Employee Gender must not be empty",
             'dob.required' => "Employee DOB must not be empty",
             'address.required' => "Employee Address must not be empty",
-            
+
             'phone_number.required' => "Employee Phonenumber must not be empty",
             'phone_number.regex' => "Incorrect Format Employee number",
 
@@ -59,30 +63,30 @@ class EmployeeImport implements ToCollection,WithHeadingRow,WithValidation
 
         ];
     }
-
+    // public function chunkSize(): int
+    // {
+    //     return 1000;
+    // }
     public function collection(Collection $rows)
     {
-        foreach($rows as $row){
+        foreach ($rows as $row) {
             $emp = Employee::create([
                 'code'      => $row['code'],
                 'name'      => $row['name'],
                 'email'     => $row['email'],
                 'gender'    => $row['gender'],
-                'dob'       => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['dob']),
+                'dob'       => transformDate($row['dob']),
                 'address'    => $row['address'],
                 'phone_number'    => $row['phone_number'],
                 'marital_status'    => $row['marital_status'],
                 'experience'    => $row['experience'],
             ]);
-            
-            $emp_salary = EmployeeSalary::create([
-                'current_salary' =>$row['current_salary'],
-                'employee_id' => $emp->id,
-            ]);
 
-            $emp_salary = Designation::create([
-                'designation' =>$row['designation'],
-                'employee_id' => $emp->id,
+            $emp->employeeSalary()->create([
+                'current_salary' => $row['current_salary'],
+            ]);
+            $emp->designation()->create([
+                'designation' => $row['designation']
             ]);
         }
     }

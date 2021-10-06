@@ -1,8 +1,9 @@
 @extends('layouts')
 @section('title')
-    View File
+    View Page
 @endsection
 @section('content')
+
     @if ($message = Session::get('success'))
         <div class="alert alert-success">
             <p>{{ $message }}</p>
@@ -21,30 +22,60 @@
             </div>
         </div>
     @endif
-    <div class="row">
-        <div class="col-lg-12 margin-tb">
-            <div class="pull-left">
-                <h2>Excel File Upload </h2>
-            </div>
-            <div class="d-flex flex-row-reverse flex-column">
-                <div class="d-flex">
-                    <form action="{{ route('importProject') }}" method="POST" enctype="multipart/form-data"
-                        class="d-flex">
-                        @csrf
-                        <input type="file" name="file" style="height: 30px !important" required>
+    <table class="table table-bordered table-responsive-lg table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th scope="col">CODE</th>
+                <th scope="col">NAME</th>
+                <th scope="col">Email</th>
+                <th scope="col">Gender</th>
+                <th scope="col">DOB</th>
+                <th scope="col">Address</th>
+                <th scope="col">Phone Number</th>
+                <th scope="col">Marital Status</th>
+                <th scope="col">Experience</th>
+                <th scope="col">Current Salary</th>
+                <th scope="col">Designation</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($employees as $row)
+                @foreach ($row as $key => $employee)
+                    <tr>
+                        <td>{{ $employee['code'] }}</td>
+                        <td>{{ $employee['name'] }}</td>
+                        <td>{{ $employee['email'] }}</td>
+                        <td>{{ $employee['gender'] }}</td>
+                        <td>{{ transformDate($employee['dob']) }}</td>
+                        <td>{{ $employee['address'] }}</td>
+                        <td>{{ $employee['phone_number'] }}</td>
+                        <td>{{ $employee['marital_status'] }}</td>
+                        <td>{{ $employee['experience'] }}</td>
+                        <td>{{ $employee['current_salary'] }}</td>
+                        <td>{{ $employee['designation'] }}</td>
+                    </tr>
+                @endforeach
+            @endforeach
+        </tbody>
+    </table>
 
-                        <button class="btn btn-info" style="margin-left: -60px" title="Import Project">
-                            <i class="fas fa-cloud-upload-alt fa-2x"></i> </button>
-                    </form>
-                </div>
+        <div class="row">
+            <div class="col-12 col-sm-9 col-md-3">
+                <form action="{{ route('employee.acceptEvent') }}">
+                    <button class="btn btn-primary btn-lg" type="submit" >Accept</button>
+                </form>
+            </div>
+            <div class="col-12 col-sm-9 col-md-3">
+                <form action="{{ route('employee.rejectEmployee') }}">
+                    <button class="btn btn-danger btn-lg" type="submit" >Reject </button>
+                </form>
             </div>
         </div>
-    </div>
-    {{-- <script>
+    <script>
         $(document).ready(function() {
             $(".alert").fadeTo(2000, 2000).slideUp(2000, function() {
-                $(".alert").slideUp(10000);
+                $(".alert").slideUp(5000);
             });
         });
-    </script> --}}
+    </script>
 @endsection
