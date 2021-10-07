@@ -15,21 +15,17 @@ class AcceptFileEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $file;
-    // public $employee;
+    public $employee;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($file)
+
+    public function __construct(Employee $employee)
     {
-        $this->file = $file;
+        $this->employee = $employee;
     }
-    // public function __construct(Employee $employee)
-    // {
-    //     $this->employee = $employee;
-    // }
 
     /**
      * Get the channels the event should broadcast on.

@@ -21,5 +21,5 @@ Route::get('/', function () {
 Route::get('employee',[EmployeeController::class,'index'])->name('employee.index');
 Route::get('employee/view',[EmployeeController::class,'view'])->name('employee.view');
 Route::post('employee/importProject', [EmployeeController::class, 'importProject'])->name('employee.importProject');
-Route::get('acceptEvent',[EmployeeController::class,'acceptEvent'])->name('employee.acceptEvent');
+Route::post('acceptEvent',[EmployeeController::class,'acceptEvent'])->name('employee.acceptEvent');
 Route::get('reject',[EmployeeController::class,'rejectEmployee'])->name('employee.rejectEmployee');
