@@ -2,7 +2,8 @@
 
 namespace App\Providers;
 
-use App\Events\UploadExcelFileEvent;
+use App\Events\AcceptFileEvent;
+use App\Listeners\AcceptListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -21,9 +22,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         AcceptFileEvent::class=>[
             AcceptListener::class,
-        ],
-        RejectFileEvent::class=>[
-            RejectListener::class,
         ],
     ];
 

@@ -26,7 +26,7 @@ class EmployeeController extends Controller
             ->select('employees.*', 'employee_salaries.*', 'designations.*')
             ->get();
 
-        return view('employee.view', compact('employees'))
+        return view('employee.list', compact('employees'))
             ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
@@ -55,18 +55,10 @@ class EmployeeController extends Controller
             $emp->experience = $expl[9];
             $emp->current_salary = $expl[10];
             $emp->designation = $expl[11];
-            
-            AcceptFileEvent::dispatch($emp);
 
+            AcceptFileEvent::dispatch($emp);
         }
-        dd($emp);
-        // $emp->employeeSalary()->create([
-        //     'current_salary'=> $expl[10],
-        // ]);
-        // $emp->designation()->create([
-        //     'designation' => $expl[11]
-        // ]);
-        // echo "Acccept EVent CAlled";
+        return redirect()->route('employee.view')->with('success', 'Employee created successfully.');
     }
 
     public function rejectEmployee()

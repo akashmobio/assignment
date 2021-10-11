@@ -14,9 +14,11 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
 class EmployeeImport implements
-    ToCollection,
+    //ToCollection,
     WithHeadingRow,
-    WithValidation
+    WithValidation,
+    WithChunkReading,
+    ShouldQueue
 {
     use Importable;
 
@@ -63,31 +65,31 @@ class EmployeeImport implements
 
         ];
     }
-    // public function chunkSize(): int
-    // {
-    //     return 1000;
-    // }
-    public function collection(Collection $rows)
+    public function chunkSize(): int
     {
-        foreach ($rows as $row) {
-            $emp = Employee::create([
-                'code'      => $row['code'],
-                'name'      => $row['name'],
-                'email'     => $row['email'],
-                'gender'    => $row['gender'],
-                'dob'       => transformDate($row['dob']),
-                'address'    => $row['address'],
-                'phone_number'    => $row['phone_number'],
-                'marital_status'    => $row['marital_status'],
-                'experience'    => $row['experience'],
-            ]);
-
-            $emp->employeeSalary()->create([
-                'current_salary' => $row['current_salary'],
-            ]);
-            $emp->designation()->create([
-                'designation' => $row['designation']
-            ]);
-        }
+        return 1000;
     }
+    // public function collection(Collection $rows)
+    // {
+    //     foreach ($rows as $row) {
+    //         $emp = Employee::create([
+    //             'code'      => $row['code'],
+    //             'name'      => $row['name'],
+    //             'email'     => $row['email'],
+    //             'gender'    => $row['gender'],
+    //             'dob'       => transformDate($row['dob']),
+    //             'address'    => $row['address'],
+    //             'phone_number'    => $row['phone_number'],
+    //             'marital_status'    => $row['marital_status'],
+    //             'experience'    => $row['experience'],
+    //         ]);
+
+    //         $emp->employeeSalary()->create([
+    //             'current_salary' => $row['current_salary'],
+    //         ]);
+    //         $emp->designation()->create([
+    //             'designation' => $row['designation']
+    //         ]);
+    //     }
+    // }
 }
